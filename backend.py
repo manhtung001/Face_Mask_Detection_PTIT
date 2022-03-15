@@ -3,7 +3,7 @@ import uvicorn
 import numpy as np
 import nest_asyncio
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 import os
 import shutil
 
@@ -42,9 +42,12 @@ async def uploadImg(fileUpload: UploadFile = File(...)):
     print(f"info: file {fileUpload.filename} saved at {file_location}")
 
     res = predictImg(file_location)
-    return {
-        "result": fileUpload.filename,
-    }
+    return FileResponse(res)
+    # if os.path.exists(res):
+    #     return FileResponse(res)
+    # return {
+    #     "result": fileUpload.filename,
+    # }
 
 
 @app.post("/uploadVideo")
