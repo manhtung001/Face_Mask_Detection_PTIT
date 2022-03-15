@@ -1,0 +1,5 @@
+fastapi==0.70.0
+nest-asyncio==1.5.1
+numpy==1.19.5
+uvicorn==0.15.0
+python-multipart
