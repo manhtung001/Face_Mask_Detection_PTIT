@@ -6,6 +6,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException, Response
 from fastapi.responses import FileResponse, StreamingResponse
 import os
 import shutil
+from PIL import Image
 
 from utils import *
 
@@ -41,13 +42,17 @@ async def uploadImg(fileUpload: UploadFile = File(...)):
         file_object.write(fileUpload.file.read())
     print(f"info: file {fileUpload.filename} saved at {file_location}")
 
-    res = predictImg(file_location)
-    if os.path.exists(res):
-        return FileResponse(res)
-    # return {
-    #     "result": fileUpload.filename,
-    # }
+    labelList, imgResPath = predictImg(file_location)
 
+    imgRes = Image.open(imgResPath, mode='r')
+
+    bytes_image = io.BytesIO()
+    imgRes.save(bytes_image, format='PNG')
+
+    return Response(content=bytes_image.getvalue(), headers={"resLabel": str(labelList)}, media_type="image/png")
+
+    # if os.path.exists(imgResPath):
+    #     return FileResponse(imgResPath)
 
 @app.post("/uploadVideo")
 async def uploadVideo(fileUpload: UploadFile = File(...)):
@@ -72,5 +77,5 @@ nest_asyncio.apply()
 host = "0.0.0.0" if os.getenv("DOCKER-SETUP") else "127.0.0.1"
 
 # Spin up the server!
-uvicorn.run(app, host=host, port=8000)
+uvicorn.run(app, host=host, port=5000)
 

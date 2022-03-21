@@ -54,6 +54,8 @@ def predictImg(path):
     net.setInput(blob)
     detections = net.forward()
 
+    labelList = []
+
     # loop over the detections
     for i in range(0, detections.shape[2]):
         # extract the confidence (i.e., probability) associated with
@@ -94,6 +96,8 @@ def predictImg(path):
             # include the probability in the label
             label = "{}: {:.2f}%".format(label, max(mask, withoutMask) * 100)
 
+            labelList.append(label)
+
             # display the label and bounding box rectangle on the output
             # frame
             cv2.putText(image, label, (startX, startY - 10),
@@ -106,4 +110,4 @@ def predictImg(path):
     file_location = f"tmp/imageRes.jpg"
     cv2.imwrite('tmp/imageRes.jpg', image)
     print(f"info: file respone saved at {file_location}")
-    return file_location
+    return labelList, file_location
